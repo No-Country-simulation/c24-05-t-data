@@ -114,17 +114,12 @@ WHERE Areas = 'Reading';
 UPDATE store_inventory SET Product_Brand = 'Mitsubishi' WHERE Product_Brand = 'Mitsubhisi';
 UPDATE store_inventory SET Product_Brand = 'Whirlpool' WHERE Product_Brand = 'Whirepool';
 
--- 8. Reemplazar valores en Products
-UPDATE store_inventory
-SET Products = 'air-conditioning'
-WHERE Products IN ('Mitsubishi 1.5 Ton 3 Star Split AC', 'BlueStar AC');
-
--- 9. Reemplazar Areas con Product_Type siempre que Areas sea 'Home Decor'
+-- 8. Reemplazar Areas con Product_Type siempre que Areas sea 'Home Decor'
 UPDATE store_inventory
 SET Areas = Product_Type
 WHERE Areas = 'Home Decor';
 
--- 10. Mover la primera palabra de Products a Product_Brand
+-- 9. Mover la primera palabra de Products a Product_Brand
 UPDATE store_inventory
 SET 
     Product_Brand = SUBSTRING_INDEX(Products, ' ', 1), -- Extrae la primera palabra
@@ -135,17 +130,17 @@ UPDATE store_inventory
 SET Product_Brand = 'Apple'
 WHERE Products IN ('iPad', 'iPhone');
 
--- 11. Si Product_Type es 'Children\'s' y Products es 'Books', cambiar Areas a 'Children\'s'
+-- 10. Si Product_Type es 'Children\'s' y Products es 'Books', cambiar Areas a 'Children\'s'
 UPDATE store_inventory
 SET Areas = 'Children\'s'
 WHERE Product_Type = 'Children\'s' AND Products = 'Books';
 
--- 12. Si Areas es 'Children\'s', eliminar el valor de Subcategory
+-- 11. Si Areas es 'Children\'s', eliminar el valor de Subcategory
 UPDATE store_inventory
 SET Subcategory = NULL
 WHERE Areas = 'Children\'s';
 
--- 13. Mover Products a Subcategory en ciertas condiciones
+-- 12. Mover Products a Subcategory en ciertas condiciones
 UPDATE store_inventory
 SET Subcategory = Products
 WHERE Areas IN ('Clothing', 'Grocery');
@@ -156,7 +151,7 @@ WHERE Areas = 'Electronics'
 AND Product_Brand NOT IN ('Apple', 'Samsung', 'Sony') 
 AND Product_Brand IS NOT NULL;
 
--- 14. Asignar Product_Type a Products en ciertas condiciones
+-- 13. Asignar Product_Type a Products en ciertas condiciones
 UPDATE store_inventory
 SET Products = Product_Type
 WHERE Areas IN ('Clothing', 'Grocery');
@@ -167,7 +162,7 @@ WHERE Areas = 'Electronics'
 AND Product_Brand NOT IN ('Apple', 'Samsung', 'Sony') 
 AND Product_Brand IS NOT NULL;
 
--- 15. Se realizan las inserciones a cada tabla
+-- 14. Se realizan las inserciones a cada tabla
 
 -- Insertar datos en Location (Evitar duplicados)
 INSERT INTO Location (City, State, Country)
@@ -176,6 +171,11 @@ SELECT DISTINCT City, State, Country FROM store_inventory;
 -- Insertar datos en Product (Evitar duplicados)
 INSERT INTO Product (Subcategory, Areas, Products, Brand)
 SELECT DISTINCT Subcategory, Areas, Products, Product_Brand FROM store_inventory;
+
+-- Reemplazar valores en Products
+UPDATE Product
+SET Products = 'air-conditioning'
+WHERE Products IN ('Mitsubishi 1.5 Ton 3 Star Split AC', 'BlueStar AC');
 
 -- Insertar datos en Customer (Usar Location_Id como FK)
 INSERT INTO Customer (Location_Id, Age, Gender, Income, Segment)
@@ -193,7 +193,7 @@ SELECT
     Date, Time, Total_Purchases, Amount, Feedback, Payment_Method, Order_Status, Ratings 
 FROM store_inventory;
 
--- 16. Se elimina store_inventory porque ya no se va a usar
+-- 15. Se elimina store_inventory porque ya no se va a usar
 ALTER TABLE Location DROP COLUMN City;
 DROP TABLE IF EXISTS store_inventory;
 
