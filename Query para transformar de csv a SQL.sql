@@ -185,11 +185,30 @@ SELECT DISTINCT
 FROM store_inventory;
 
 
--- Insertar datos en Transaction (Usar Customer_Id y Product_Id como FK)
+-- Insertar datos en Transaction con Customer_Id más preciso
 INSERT INTO Transaction (Customer_Id, Product_Id, Date, Time, Total, Amount, Feedback, Payment, Status, Ratings)
 SELECT 
-    (SELECT Customer_Id FROM Customer WHERE store_inventory.Age = Customer.Age AND store_inventory.Gender = Customer.Gender AND store_inventory.Income = Customer.Income AND store_inventory.Customer_Segment = Customer.Segment LIMIT 1),
-    (SELECT Product_Id FROM Product WHERE store_inventory.Products = Product.Products AND store_inventory.Product_Brand = Product.Brand AND store_inventory.Areas = Product.Areas LIMIT 1),
+    (SELECT Customer_Id 
+     FROM Customer 
+     WHERE store_inventory.Age = Customer.Age 
+       AND store_inventory.Gender = Customer.Gender 
+       AND store_inventory.Income = Customer.Income 
+       AND store_inventory.Customer_Segment = Customer.Segment
+       AND Customer.Location_Id = (
+           SELECT Location_Id 
+           FROM Location 
+           WHERE store_inventory.City = Location.City 
+             AND store_inventory.State = Location.State 
+             AND store_inventory.Country = Location.Country
+           LIMIT 1
+       )
+     LIMIT 1),
+    (SELECT Product_Id 
+     FROM Product 
+     WHERE store_inventory.Products = Product.Products 
+       AND store_inventory.Product_Brand = Product.Brand 
+       AND store_inventory.Areas = Product.Areas 
+     LIMIT 1),
     Date, Time, Total_Purchases, Amount, Feedback, Payment_Method, Order_Status, Ratings 
 FROM store_inventory;
 
